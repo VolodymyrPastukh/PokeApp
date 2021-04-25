@@ -5,18 +5,19 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vovan.pokeapp.R
-import com.vovan.pokeapp.databinding.FragmentPokeListBinding
-import com.vovan.pokeapp.presentation.adapter.PokeAdapter
+import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
+import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
 import timber.log.Timber
 
 class PokemonListFragment : Fragment() {
 
     lateinit var viewModel: PokemonListViewModel
-    private lateinit var adapter: PokeAdapter
+    private lateinit var adapter: PokemonAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -24,15 +25,17 @@ class PokemonListFragment : Fragment() {
     ): View {
 
         //Binding
-        val binding: FragmentPokeListBinding = DataBindingUtil.inflate(
+        val binding: FragmentPokemonListBinding = DataBindingUtil.inflate(
                 inflater,
-                R.layout.fragment_poke_list,
+                R.layout.fragment_pokemon_list,
                 container,
                 false
             )
 
 
-        adapter = PokeAdapter()
+        adapter = PokemonAdapter(PokemonAdapter.PokemonClickListener {
+            Toast.makeText(activity, "Item pokemon id $it", Toast.LENGTH_SHORT).show()
+        })
         viewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)

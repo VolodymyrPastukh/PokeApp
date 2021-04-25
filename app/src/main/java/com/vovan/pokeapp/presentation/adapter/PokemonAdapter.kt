@@ -4,20 +4,18 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
 import com.vovan.pokeapp.R
-import timber.log.Timber
+import com.vovan.pokeapp.databinding.PokeItemBinding
 
 private const val ITEM_TYPE_UNKNOWN = 0
 private const val ITEM_TYPE_POKEMON = 1
 private const val ITEM_TYPE_HEADER = 2
 
-class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class PokemonAdapter(
+    private val clickListener: PokemonClickListener
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     private var items: MutableList<DisplayableItem> = emptyList<DisplayableItem>().toMutableList()
 
     fun setPokemonList(data: List<DisplayableItem>) {
@@ -26,24 +24,11 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         notifyDataSetChanged()
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when (viewType) {
-            ITEM_TYPE_POKEMON -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.poke_item, parent, false)
-                PokemonViewHolder(view)
-            }
-
-            ITEM_TYPE_HEADER -> {
-                val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.header_item, parent, false)
-                BannerViewHolder(view)
-            }
-
-            else -> {
-                throw IllegalStateException("Shos ne to")
-            }
+            ITEM_TYPE_POKEMON -> PokemonViewHolder.from(parent)
+            ITEM_TYPE_HEADER -> HeaderViewHolder.from(parent)
+            else -> throw IllegalStateException("Shos ne to")
         }
     }
 
@@ -51,8 +36,8 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val itemToShow = items[position]) {
-            is PokemonItem -> (holder as PokemonViewHolder).bind(itemToShow)
-            is HeaderItem -> (holder as BannerViewHolder).bind(itemToShow)
+            is PokemonItem -> (holder as PokemonViewHolder).bind(itemToShow, clickListener)
+            is HeaderItem -> (holder as HeaderViewHolder).bind(itemToShow)
         }
     }
 
@@ -64,42 +49,38 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    class PokemonViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val textView = itemView.findViewById<TextView>(R.id.name)
-        private val imagePreview = itemView.findViewById<ImageView>(R.id.imagePreview)
-        private val layout = itemView.findViewById<LinearLayout>(R.id.linearLayout)
+    class PokemonViewHolder(val binding: PokeItemBinding) : RecyclerView.ViewHolder(binding.root) {
+        private val layout = binding.linearLayout
 
-        fun bind(item: PokemonItem) {
-            textView.text = item.name
+        fun bind(item: PokemonItem, clickListener: PokemonClickListener) {
+            binding.item = item
+            binding.executePendingBindings()
+            binding.click = clickListener
 
             if (changePosition) {
                 changePosition = false
                 val temp = layout.getChildAt(0)
                 layout.removeViewAt(0)
                 layout.addView(temp)
-            }else{
+            } else {
                 changePosition = true
             }
-
-
-            Picasso.get().load(item.imageUrl).into(imagePreview, object : Callback {
-                override fun onSuccess() {
-                    Timber.d("Loaded image")
-                }
-
-                override fun onError(e: Exception?) {
-                    Timber.d("Loaded image exception $e")
-                }
-            })
         }
 
-        companion object{
+        companion object {
             private var changePosition = true
+
+            fun from(parent: ViewGroup): PokemonViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = PokeItemBinding.inflate(layoutInflater, parent, false)
+                return PokemonViewHolder(binding)
+            }
+
         }
 
     }
 
-    class BannerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val textView = itemView.findViewById<TextView>(R.id.bannerName)
 
         fun bind(item: HeaderItem) {
@@ -113,11 +94,22 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
         }
 
-        private fun changeColor(color: Int){
+        private fun changeColor(color: Int) {
             itemView.setBackgroundColor(color)
             textView.setBackgroundColor(color)
         }
+
+        companion object {
+            fun from(parent: ViewGroup): HeaderViewHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val view = layoutInflater.inflate(R.layout.header_item, parent, false)
+                return HeaderViewHolder(view)
+            }
+
+        }
     }
 
-
+    class PokemonClickListener(val clickListener: (id: Int) -> Unit) {
+        fun onClick(item: PokemonItem) = clickListener(item.id)
+    }
 }

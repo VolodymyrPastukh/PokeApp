@@ -26,8 +26,15 @@ class MainActivity : AppCompatActivity(), Navigation {
             .replace(R.id.navHost, PokemonListFragment())
             .commit()
     }
+
+    override fun openPokemonDetails() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHost, PokemonListFragment())
+            .commit()
+    }
 }
 
 interface Navigation{
     fun openPokemonList()
+    fun openPokemonDetails()
 }
