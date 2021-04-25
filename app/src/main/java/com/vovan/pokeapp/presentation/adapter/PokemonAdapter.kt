@@ -1,4 +1,4 @@
-package com.vovan.pokeapp.adapter
+package com.vovan.pokeapp.presentation.adapter
 
 import android.graphics.Color
 import android.view.LayoutInflater
@@ -51,14 +51,14 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (val itemToShow = items[position]) {
-            is PokeItem -> (holder as PokemonViewHolder).bind(itemToShow)
+            is PokemonItem -> (holder as PokemonViewHolder).bind(itemToShow)
             is HeaderItem -> (holder as BannerViewHolder).bind(itemToShow)
         }
     }
 
     override fun getItemViewType(position: Int): Int {
         return when (items[position]) {
-            is PokeItem -> ITEM_TYPE_POKEMON
+            is PokemonItem -> ITEM_TYPE_POKEMON
             is HeaderItem -> ITEM_TYPE_HEADER
             else -> ITEM_TYPE_UNKNOWN
         }
@@ -69,7 +69,7 @@ class PokeAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         private val imagePreview = itemView.findViewById<ImageView>(R.id.imagePreview)
         private val layout = itemView.findViewById<LinearLayout>(R.id.linearLayout)
 
-        fun bind(item: PokeItem) {
+        fun bind(item: PokemonItem) {
             textView.text = item.name
 
             if (changePosition) {

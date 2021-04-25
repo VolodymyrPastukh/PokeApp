@@ -1,11 +1,14 @@
-package com.vovan.pokeapp
+package com.vovan.pokeapp.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.library.BuildConfig
+import com.vovan.pokeapp.R
+import com.vovan.pokeapp.presentation.pokelist.PokemonListFragment
+import com.vovan.pokeapp.presentation.title.TitleFragment
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Navigation {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -17,4 +20,14 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.navHost, TitleFragment())
             .commit()
     }
+
+    override fun openPokemonList() {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHost, PokemonListFragment())
+            .commit()
+    }
+}
+
+interface Navigation{
+    fun openPokemonList()
 }

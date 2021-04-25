@@ -1,8 +1,8 @@
-package com.vovan.pokeapp.adapter
+package com.vovan.pokeapp.presentation.adapter
 
 interface DisplayableItem
 
-data class PokeItem(
+data class PokemonItem(
     val id: Int,
     val name: String,
     val imageUrl: String,
