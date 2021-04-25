@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.vovan.pokeapp.data.NetworkPokemonRepository
 import com.vovan.pokeapp.data.network.createPokemonApiService
-import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.adapter.DisplayableItem
 import com.vovan.pokeapp.presentation.adapter.HeaderItem
@@ -13,27 +12,25 @@ import com.vovan.pokeapp.presentation.adapter.PokemonItem
 import com.vovan.pokeapp.toPokemonItem
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import timber.log.Timber
 
 class PokemonListViewModel: ViewModel() {
     private val repository: PokemonRepository = NetworkPokemonRepository(
         api = createPokemonApiService()
     )
 
-    private val _pokemonListData = MutableLiveData<List<DisplayableItem>>()
-    val pokemonListData: LiveData<List<DisplayableItem>>
+    private val _pokemonListData = MutableLiveData<PokemonListViewState>()
+    val pokemonListData: LiveData<PokemonListViewState>
         get() = _pokemonListData
 
     fun loadData() {
-        val disposable =repository.getPokemonList()
+        _pokemonListData.value = PokemonListViewState.Loading
+        repository.getPokemonList()
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { showData(it.map { it.toPokemonItem() }) },
-                { Timber.d("ViewModel error $it") }
+                { _pokemonListData.value = PokemonListViewState.Error("Error - $it") }
             )
-
-
     }
 
     private fun showData(pokemonList: List<PokemonItem>) {
@@ -51,7 +48,7 @@ class PokemonListViewModel: ViewModel() {
             resultList.addAll(listByAttributes[index] as Collection<DisplayableItem>)
         }
 
-        _pokemonListData.value = resultList
+        _pokemonListData.value = PokemonListViewState.Data(resultList)
 
     }
 

@@ -19,6 +19,7 @@ class PokemonListFragment : Fragment() {
 
     lateinit var viewModel: PokemonListViewModel
     private lateinit var adapter: PokemonAdapter
+    private lateinit var binding: FragmentPokemonListBinding
     private val navigator: Navigation? by lazy { (activity as? Navigation) }
 
     override fun onCreateView(
@@ -27,7 +28,7 @@ class PokemonListFragment : Fragment() {
     ): View {
 
         //Binding
-        val binding: FragmentPokemonListBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
                 inflater,
                 R.layout.fragment_pokemon_list,
                 container,
@@ -44,14 +45,28 @@ class PokemonListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
 
-        viewModel.pokemonListData.observe(viewLifecycleOwner, { pokemonList ->
-            Timber.d("Adapter setList")
-            adapter.setPokemonList(pokemonList)
+        viewModel.pokemonListData.observe(viewLifecycleOwner, { state ->
+            displayData(state)
         })
 
         viewModel.loadData()
 
         return binding.root
+    }
+
+    private fun displayData(state: PokemonListViewState){
+        when(state){
+            is PokemonListViewState.Loading -> {}
+
+            is PokemonListViewState.Data -> {
+                binding.progressBar.hide()
+                adapter.setPokemonList(state.pokemons)
+            }
+
+            is PokemonListViewState.Error -> {
+                Timber.e(state.message)
+            }
+        }
     }
 
 
