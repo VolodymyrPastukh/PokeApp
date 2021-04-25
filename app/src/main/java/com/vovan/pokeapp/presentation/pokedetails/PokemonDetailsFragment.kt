@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
 import com.squareup.picasso.Callback
@@ -21,13 +22,14 @@ import java.lang.IllegalArgumentException
 class PokemonDetailsFragment : Fragment() {
 
     private lateinit var viewModel: PokemonDetailsViewModel
+    private lateinit var binding: FragmentPokemonDetailsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val binding: FragmentPokemonDetailsBinding = DataBindingUtil.inflate(
+        binding = DataBindingUtil.inflate(
             inflater,
             R.layout.fragment_pokemon_details,
             container,
@@ -39,24 +41,37 @@ class PokemonDetailsFragment : Fragment() {
             .get(PokemonDetailsViewModel::class.java)
 
 
-        viewModel.pokemon.observe(viewLifecycleOwner, {pokemonItem ->
-            binding.pokemonName.text = pokemonItem.name
-
-            Picasso.get().load(pokemonItem.imageUrl).into(binding.pokemonImage, object : Callback {
-                override fun onSuccess() {
-                    Timber.d("Loaded image")
-                }
-
-                override fun onError(e: Exception?) {
-                    Timber.d("Loaded image exception $e")
-                }
-            })
-
+        viewModel.pokemon.observe(viewLifecycleOwner, { state ->
+            displayData(state)
         })
 
 
         return binding.root
     }
+
+    fun displayData(state: PokemonDetailsViewState){
+        when(state){
+            is PokemonDetailsViewState.Loading -> {
+                binding.pokemonImage.isVisible = false
+                binding.pokemonName.isVisible = false
+            }
+
+            is PokemonDetailsViewState.Data -> {
+                binding.progressBar.hide()
+                binding.pokemonImage.isVisible = true
+                binding.pokemonName.isVisible = true
+                binding.pokemon = state.pokemonItem
+                binding.executePendingBindings()
+            }
+
+            is PokemonDetailsViewState.Error -> {
+                binding.progressBar.hide()
+                binding.pokemonName.isVisible = true
+                binding.pokemonName.text = state.message
+            }
+        }
+    }
+
 
 
 

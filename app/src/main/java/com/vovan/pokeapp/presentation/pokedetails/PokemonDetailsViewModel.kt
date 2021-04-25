@@ -17,11 +17,12 @@ class PokemonDetailsViewModel(private val pokemonId: Int) : ViewModel() {
         api = createPokemonApiService()
     )
 
-    private val _pokemon = MutableLiveData<PokemonItem>()
-    val pokemon: LiveData<PokemonItem>
+    private val _pokemon = MutableLiveData<PokemonDetailsViewState>()
+    val pokemon: LiveData<PokemonDetailsViewState>
         get() = _pokemon
 
     init {
+        _pokemon.value = PokemonDetailsViewState.Loading
         loadData()
     }
 
@@ -30,8 +31,8 @@ class PokemonDetailsViewModel(private val pokemonId: Int) : ViewModel() {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { _pokemon.value = it.toPokemonItem()},
-                { Timber.d("ViewModel error $it")}
+                { _pokemon.value = PokemonDetailsViewState.Data(it.toPokemonItem())},
+                { _pokemon.value = PokemonDetailsViewState.Error("Error - $it")}
             )
     }
 
