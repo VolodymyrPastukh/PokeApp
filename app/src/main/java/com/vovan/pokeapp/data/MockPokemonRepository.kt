@@ -1,3 +1,4 @@
+/*
 package com.vovan.pokeapp.data
 
 import com.vovan.pokeapp.domain.PokemonEntity
@@ -43,4 +44,4 @@ class MockPokemonRepository: PokemonRepository {
     }
 
     override fun getPokemonList(): List<PokemonEntity> = pokemons
-}
+}*/
