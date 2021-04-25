@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">PokeApp</string>
+
+    <!--  Title Fragment  -->
+    <string name="welcomed_string">Welcome to PokeApp</string>
+    <string name="designed_by_string">designed by Pastukh V.A.</string>
+
+    <!--  Buttons  -->
+    <string name="button_start">Start</string>
+
 </resources>
