@@ -10,6 +10,7 @@ import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.adapter.DisplayableItem
 import com.vovan.pokeapp.presentation.adapter.HeaderItem
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
+import com.vovan.pokeapp.toPokemonItem
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
@@ -63,14 +64,7 @@ class PokemonListViewModel: ViewModel() {
         }
     }
 
-    private fun PokemonEntity.toPokemonItem(): PokemonItem {
-        return PokemonItem(
-            this.id,
-            this.name,
-            this.imageUrl,
-            this.attribute,
-        )
-    }
+
 
 
 }

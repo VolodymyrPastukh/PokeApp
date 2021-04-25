@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.library.BuildConfig
 import com.vovan.pokeapp.R
+import com.vovan.pokeapp.presentation.pokedetails.PokemonDetailsFragment
 import com.vovan.pokeapp.presentation.pokelist.PokemonListFragment
 import com.vovan.pokeapp.presentation.title.TitleFragment
 import timber.log.Timber
@@ -27,14 +28,15 @@ class MainActivity : AppCompatActivity(), Navigation {
             .commit()
     }
 
-    override fun openPokemonDetails() {
+    override fun openPokemonDetails(id: Int) {
         supportFragmentManager.beginTransaction()
-            .replace(R.id.navHost, PokemonListFragment())
+            .replace(R.id.navHost, PokemonDetailsFragment.newInstance(id))
+            .addToBackStack(null)
             .commit()
     }
 }
 
 interface Navigation{
     fun openPokemonList()
-    fun openPokemonDetails()
+    fun openPokemonDetails(id: Int)
 }

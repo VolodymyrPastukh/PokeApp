@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
+import com.vovan.pokeapp.presentation.Navigation
 import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
 import timber.log.Timber
 
@@ -18,6 +19,7 @@ class PokemonListFragment : Fragment() {
 
     lateinit var viewModel: PokemonListViewModel
     private lateinit var adapter: PokemonAdapter
+    private val navigator: Navigation? by lazy { (activity as? Navigation) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +36,7 @@ class PokemonListFragment : Fragment() {
 
 
         adapter = PokemonAdapter(PokemonAdapter.PokemonClickListener {
-            Toast.makeText(activity, "Item pokemon id $it", Toast.LENGTH_SHORT).show()
+            navigator?.openPokemonDetails(it)
         })
         viewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
 

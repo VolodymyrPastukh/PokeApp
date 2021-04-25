@@ -28,6 +28,7 @@ interface PokemonApiService {
 
     @GET("pokemon/{name}")
     fun fetchPokemonInfo(@Path("name") name: String): Single<PokemonDetailedDTO>
+
 }
 
 data class PokemonListDTO(
