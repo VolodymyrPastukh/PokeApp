@@ -12,23 +12,21 @@ fun createPokemonApiService(): PokemonApiService {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://pokeapi.co/api/v2/")
         .addConverterFactory(GsonConverterFactory.create())
-        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+//        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
         .build()
 
     return retrofit.create(PokemonApiService::class.java)
 }
 
 interface PokemonApiService {
-
     @GET("pokemon")
-    fun fetchPokemonList(
+    suspend fun fetchPokemonList(
         @Query("limit") limit: Int = 20,
         @Query("offset") offset: Int = 0
-    ): Single<PokemonListDTO>
+    ): PokemonListDTO
 
     @GET("pokemon/{name}")
-    fun fetchPokemonInfo(@Path("name") name: String): Single<PokemonDetailedDTO>
-
+    suspend fun fetchPokemonInfo(@Path("name") name: String): PokemonDetailedDTO
 }
 
 data class PokemonListDTO(

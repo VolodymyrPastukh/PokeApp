@@ -3,34 +3,50 @@ package com.vovan.pokeapp.presentation.pokelist
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.vovan.pokeapp.data.NetworkPokemonRepository
 import com.vovan.pokeapp.data.network.createPokemonApiService
+import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.adapter.DisplayableItem
 import com.vovan.pokeapp.presentation.adapter.HeaderItem
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import com.vovan.pokeapp.domain.Result
 import com.vovan.pokeapp.toPokemonItem
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 
 class PokemonListViewModel: ViewModel() {
     private val repository: PokemonRepository = NetworkPokemonRepository(
         api = createPokemonApiService()
     )
 
-    private val _pokemonListData = MutableLiveData<PokemonListViewState>()
-    val pokemonListData: LiveData<PokemonListViewState>
-        get() = _pokemonListData
+    private val _state = MutableLiveData<PokemonListViewState>()
+    val state: LiveData<PokemonListViewState>
+        get() = _state
 
-    fun loadData() {
-        _pokemonListData.value = PokemonListViewState.Loading
-        repository.getPokemonList()
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { showData(it.map { it.toPokemonItem() }) },
-                { _pokemonListData.value = PokemonListViewState.Error("Error - $it") }
-            )
+    init {
+        _state.value = PokemonListViewState.Loading
+        loadData()
+    }
+
+    private fun loadData() {
+        _state.value = PokemonListViewState.Loading
+        viewModelScope.launch {
+            delay(2000L)
+            val result = repository.getPokemonList()
+            processResult(result)
+        }
+    }
+
+    private fun processResult(result: Result<List<PokemonEntity>>){
+        when(result){
+            is Result.Success ->
+                showData(result.data.map { it.toPokemonItem() })
+
+            is Result.Error ->
+                _state.value = PokemonListViewState.Error(result.error.message ?: "Unknown 404)")
+        }
     }
 
     private fun showData(pokemonList: List<PokemonItem>) {
@@ -48,7 +64,7 @@ class PokemonListViewModel: ViewModel() {
             resultList.addAll(listByAttributes[index] as Collection<DisplayableItem>)
         }
 
-        _pokemonListData.value = PokemonListViewState.Data(resultList)
+        _state.value = PokemonListViewState.Data(resultList)
 
     }
 

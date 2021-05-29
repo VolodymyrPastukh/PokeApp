@@ -3,37 +3,35 @@ package com.vovan.pokeapp.data
 import com.vovan.pokeapp.data.network.PokemonApiService
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
-import com.vovan.pokeapp.generatePokemonUrlFromId
-import io.reactivex.Observable
-import io.reactivex.Single
-import timber.log.Timber
-import kotlin.random.Random
-import kotlin.random.nextInt
+import com.vovan.pokeapp.domain.Result
+import com.vovan.pokeapp.toPokemonEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class NetworkPokemonRepository(val api: PokemonApiService): PokemonRepository {
-    override fun getPokemonById(id: String): Single<PokemonEntity> {
-        return api.fetchPokemonInfo(id)
-            .map { pokemonDTO ->
-                PokemonEntity(
-                    pokemonDTO.id,
-                    pokemonDTO.name,
-                    generatePokemonUrlFromId(pokemonDTO.id),
-                    Random.nextInt(0..3),
-                    pokemonDTO.abilities.map { it.ability.name }
-                )
+    override suspend fun getPokemonById(id: String): Result<PokemonEntity> {
+        return withContext(Dispatchers.IO){
+            try {
+                val pokemon = api.fetchPokemonInfo(id).toPokemonEntity()
+                Result.Success(pokemon)
+            }catch (e: Exception){
+                Result.Error(e)
             }
+        }
     }
 
-    override fun getPokemonList(): Single<List<PokemonEntity>> {
-        return api.fetchPokemonList().flatMap { pokemonList ->
+    override suspend fun getPokemonList(): Result<List<PokemonEntity>> {
+        return withContext(Dispatchers.IO){
+            try {
+                val names = api.fetchPokemonList().results.map { it.name }
+                val pokemonList = names.map { name ->
+                    api.fetchPokemonInfo(name).toPokemonEntity()
+                }
 
-            Observable
-                .fromIterable(pokemonList.results)
-                .flatMapSingle {
-                    Timber.d("${pokemonList.results.indexOf(it)}")
-                    getPokemonById(it.name)
-                }.toList()
-
+                Result.Success(pokemonList)
+            }catch (e: java.lang.Exception){
+                Result.Error(e)
+            }
         }
     }
 }

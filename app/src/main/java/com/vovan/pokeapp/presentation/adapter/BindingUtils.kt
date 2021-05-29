@@ -8,8 +8,8 @@ import com.squareup.picasso.Picasso
 import timber.log.Timber
 
 @BindingAdapter("pokemonImage")
-fun ImageView.setPokemonImageFromUrl(item: PokemonItem){
-    Picasso.get().load(item.imageUrl).into(this, object : Callback {
+fun ImageView.setPokemonImageFromUrl(item: PokemonItem?){
+    Picasso.get().load(item?.imageUrl).into(this, object : Callback {
         override fun onSuccess() {
             Timber.d("Loaded image")
         }
@@ -21,6 +21,6 @@ fun ImageView.setPokemonImageFromUrl(item: PokemonItem){
 }
 
 @BindingAdapter("pokemonName")
-fun TextView.setPokemonName(item: PokemonItem){
-    text = item.name
+fun TextView.setPokemonName(item: PokemonItem?){
+    text = item?.name
 }

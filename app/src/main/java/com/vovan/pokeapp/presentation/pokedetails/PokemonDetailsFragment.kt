@@ -41,7 +41,7 @@ class PokemonDetailsFragment : Fragment() {
             .get(PokemonDetailsViewModel::class.java)
 
 
-        viewModel.pokemon.observe(viewLifecycleOwner, { state ->
+        viewModel.state.observe(viewLifecycleOwner, { state ->
             displayData(state)
         })
 

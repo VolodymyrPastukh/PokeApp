@@ -45,11 +45,10 @@ class PokemonListFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
 
-        viewModel.pokemonListData.observe(viewLifecycleOwner, { state ->
+        viewModel.state.observe(viewLifecycleOwner, { state ->
             displayData(state)
         })
 
-        viewModel.loadData()
 
         return binding.root
     }
