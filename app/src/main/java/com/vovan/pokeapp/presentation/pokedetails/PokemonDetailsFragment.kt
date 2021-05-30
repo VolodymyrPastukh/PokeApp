@@ -15,13 +15,14 @@ import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonDetailsBinding
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
 import com.vovan.pokeapp.presentation.adapter.setPokemonImageFromUrl
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.lang.IllegalArgumentException
 
 
 class PokemonDetailsFragment : Fragment() {
 
-    private lateinit var viewModel: PokemonDetailsViewModel
+    private val viewModel: PokemonDetailsViewModel by viewModel()
     private lateinit var binding: FragmentPokemonDetailsBinding
 
     override fun onCreateView(
@@ -36,20 +37,17 @@ class PokemonDetailsFragment : Fragment() {
             false
         )
 
-        val factory = PokemonDetailsModelFactory(getBundlePokemonId())
-        viewModel = ViewModelProvider(this, factory)
-            .get(PokemonDetailsViewModel::class.java)
-
-
         viewModel.state.observe(viewLifecycleOwner, { state ->
             displayData(state)
         })
+
+        viewModel.loadData(getBundlePokemonId())
 
 
         return binding.root
     }
 
-    fun displayData(state: PokemonDetailsViewState){
+    private fun displayData(state: PokemonDetailsViewState){
         when(state){
             is PokemonDetailsViewState.Loading -> {
                 binding.pokemonImage.isVisible = false

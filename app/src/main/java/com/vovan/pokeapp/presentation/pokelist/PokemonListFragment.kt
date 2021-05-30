@@ -13,11 +13,12 @@ import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
 import com.vovan.pokeapp.presentation.Navigation
 import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
 class PokemonListFragment : Fragment() {
 
-    lateinit var viewModel: PokemonListViewModel
+    private val viewModel: PokemonListViewModel by viewModel()
     private lateinit var adapter: PokemonAdapter
     private lateinit var binding: FragmentPokemonListBinding
     private val navigator: Navigation? by lazy { (activity as? Navigation) }
@@ -39,7 +40,6 @@ class PokemonListFragment : Fragment() {
         adapter = PokemonAdapter(PokemonAdapter.PokemonClickListener {
             navigator?.openPokemonDetails(it)
         })
-        viewModel = ViewModelProvider(this).get(PokemonListViewModel::class.java)
 
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
@@ -48,7 +48,6 @@ class PokemonListFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner, { state ->
             displayData(state)
         })
-
 
         return binding.root
     }

@@ -14,6 +14,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,6 +65,13 @@ dependencies {
     //Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
 
+    // Koin for Android
+    def koin_version= "3.0.1"
+    implementation "io.insert-koin:koin-android:$koin_version" // Koin main features for Android (Scope,ViewModel ...)
+    implementation "io.insert-koin:koin-android-ext:$koin_version" // Koin Android - experimental builder extensions
+    testImplementation "io.insert-koin:koin-test:$koin_version"
+
+    implementation "androidx.multidex:multidex:2.0.1"
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

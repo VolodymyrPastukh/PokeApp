@@ -4,19 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.vovan.pokeapp.data.NetworkPokemonRepository
-import com.vovan.pokeapp.data.network.createPokemonApiService
 import com.vovan.pokeapp.domain.PokemonEntity
+import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.domain.Result
 import com.vovan.pokeapp.toPokemonItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PokemonDetailsViewModel(private val pokemonId: Int) : ViewModel() {
-
-    private val repository = NetworkPokemonRepository(
-        api = createPokemonApiService()
-    )
+class PokemonDetailsViewModel(private val repository: PokemonRepository) : ViewModel() {
 
     private val _state = MutableLiveData<PokemonDetailsViewState>()
     val state: LiveData<PokemonDetailsViewState>
@@ -24,12 +19,10 @@ class PokemonDetailsViewModel(private val pokemonId: Int) : ViewModel() {
 
     init {
         _state.value = PokemonDetailsViewState.Loading
-        loadData()
     }
 
-    private fun loadData() {
+     fun loadData(pokemonId: Int) {
         viewModelScope.launch {
-            delay(2000L)
             val result = repository.getPokemonById(pokemonId.toString())
             processResult(result)
         }
