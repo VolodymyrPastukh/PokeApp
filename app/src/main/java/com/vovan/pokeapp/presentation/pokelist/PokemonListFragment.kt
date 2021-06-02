@@ -18,8 +18,9 @@ import timber.log.Timber
 class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
     private val viewModel: PokemonListViewModel by viewModel()
-    private lateinit var adapter: PokemonAdapter
     private val binding: FragmentPokemonListBinding by viewBinding()
+    private var adapter: PokemonAdapter? = null
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,7 +43,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
 
             is PokemonListViewState.Data -> {
                 binding.progressBar.hide()
-                adapter.setPokemonList(state.pokemons)
+                adapter?.submitList(state.pokemons)
             }
 
             is PokemonListViewState.Error -> {
