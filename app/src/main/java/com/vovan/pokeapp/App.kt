@@ -5,6 +5,7 @@ import com.vovan.pokeapp.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
+import org.koin.core.logger.Level
 
 class App: Application() {
 
@@ -12,7 +13,7 @@ class App: Application() {
         super.onCreate()
 
         startKoin {
-            androidLogger()
+            androidLogger(Level.ERROR)
             androidContext(this@App)
             modules(appModule)
         }

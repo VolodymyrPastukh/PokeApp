@@ -1,29 +1,25 @@
 package com.vovan.pokeapp.presentation.pokedetails
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
-import com.squareup.picasso.Callback
-import com.squareup.picasso.Picasso
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.navArgs
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonDetailsBinding
-import com.vovan.pokeapp.presentation.adapter.PokemonItem
-import com.vovan.pokeapp.presentation.adapter.setPokemonImageFromUrl
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
-import java.lang.IllegalArgumentException
+import org.koin.core.parameter.parametersOf
 
 
 class PokemonDetailsFragment : Fragment() {
 
-    private val viewModel: PokemonDetailsViewModel by viewModel()
+    private val navArgs by navArgs<PokemonDetailsFragmentArgs>()
+    private val viewModel: PokemonDetailsViewModel by viewModel { parametersOf(navArgs.pokemonId)}
     private lateinit var binding: FragmentPokemonDetailsBinding
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,8 +36,6 @@ class PokemonDetailsFragment : Fragment() {
         viewModel.state.observe(viewLifecycleOwner, { state ->
             displayData(state)
         })
-
-        viewModel.loadData(getBundlePokemonId())
 
 
         return binding.root
@@ -67,27 +61,6 @@ class PokemonDetailsFragment : Fragment() {
                 binding.pokemonName.isVisible = true
                 binding.pokemonName.text = state.message
             }
-        }
-    }
-
-
-
-
-    private fun getBundlePokemonId(): Int{
-        val id = arguments?.getInt(PARAM_POKEMON_ID)
-
-        if(id != null) return id
-
-        throw IllegalArgumentException("Null argument Pokemon id")
-    }
-
-    companion object{
-        private const val PARAM_POKEMON_ID = "Pokemon_id"
-
-        fun newInstance(id: Int): Fragment = PokemonDetailsFragment().apply {
-            arguments = bundleOf(
-                PARAM_POKEMON_ID to id
-            )
         }
     }
 

@@ -5,6 +5,7 @@ import com.vovan.pokeapp.data.network.PokemonApiService
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.pokedetails.PokemonDetailsViewModel
 import com.vovan.pokeapp.presentation.pokelist.PokemonListViewModel
+import com.vovan.pokeapp.presentation.title.TitleViewModel
 import org.koin.androidx.experimental.dsl.viewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -16,7 +17,7 @@ val appModule = module {
     single { providePokemonApiService() }
     single<PokemonRepository> { NetworkPokemonRepository(get()) }
 
-    viewModel { PokemonDetailsViewModel(get()) }
+    viewModel { (id: Int) -> PokemonDetailsViewModel(id, get()) }
     viewModel { PokemonListViewModel(get()) }
 }
 

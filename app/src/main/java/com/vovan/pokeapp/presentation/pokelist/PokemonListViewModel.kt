@@ -16,7 +16,6 @@ import kotlinx.coroutines.launch
 
 class PokemonListViewModel(private val repository: PokemonRepository): ViewModel() {
 
-
     private val _state = MutableLiveData<PokemonListViewState>()
     val state: LiveData<PokemonListViewState>
         get() = _state

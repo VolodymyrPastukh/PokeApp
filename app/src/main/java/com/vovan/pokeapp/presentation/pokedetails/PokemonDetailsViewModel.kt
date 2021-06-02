@@ -11,7 +11,10 @@ import com.vovan.pokeapp.toPokemonItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class PokemonDetailsViewModel(private val repository: PokemonRepository) : ViewModel() {
+class PokemonDetailsViewModel(
+    private val pokemonId: Int,
+    private val repository: PokemonRepository
+    ) : ViewModel() {
 
     private val _state = MutableLiveData<PokemonDetailsViewState>()
     val state: LiveData<PokemonDetailsViewState>
@@ -19,9 +22,10 @@ class PokemonDetailsViewModel(private val repository: PokemonRepository) : ViewM
 
     init {
         _state.value = PokemonDetailsViewState.Loading
+        loadData()
     }
 
-     fun loadData(pokemonId: Int) {
+     private fun loadData() {
         viewModelScope.launch {
             val result = repository.getPokemonById(pokemonId.toString())
             processResult(result)
