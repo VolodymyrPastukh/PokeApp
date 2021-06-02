@@ -8,58 +8,44 @@ import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonDetailsBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
 
-class PokemonDetailsFragment : Fragment() {
+class PokemonDetailsFragment : Fragment(R.layout.fragment_pokemon_details) {
 
     private val navArgs by navArgs<PokemonDetailsFragmentArgs>()
     private val viewModel: PokemonDetailsViewModel by viewModel { parametersOf(navArgs.pokemonId)}
-    private lateinit var binding: FragmentPokemonDetailsBinding
+    private val binding: FragmentPokemonDetailsBinding by viewBinding()
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        binding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_pokemon_details,
-            container,
-            false
-        )
-
-        viewModel.state.observe(viewLifecycleOwner, { state ->
-            displayData(state)
-        })
-
-
-        return binding.root
+        viewModel.state.observe(viewLifecycleOwner, ::displayData)
     }
 
-    private fun displayData(state: PokemonDetailsViewState){
+    private fun displayData(state: PokemonDetailsViewState) = binding.apply{
         when(state){
             is PokemonDetailsViewState.Loading -> {
-                binding.pokemonImage.isVisible = false
-                binding.pokemonName.isVisible = false
+                pokemonImage.isVisible = false
+                pokemonName.isVisible = false
             }
 
             is PokemonDetailsViewState.Data -> {
-                binding.progressBar.hide()
-                binding.pokemonImage.isVisible = true
-                binding.pokemonName.isVisible = true
-                binding.pokemon = state.pokemonItem
-                binding.executePendingBindings()
+                progressBar.hide()
+                pokemonImage.isVisible = true
+                pokemonName.isVisible = true
+                pokemon = state.pokemonItem
+                executePendingBindings()
             }
 
             is PokemonDetailsViewState.Error -> {
-                binding.progressBar.hide()
-                binding.pokemonName.isVisible = true
-                binding.pokemonName.text = state.message
+                progressBar.hide()
+                pokemonName.isVisible = true
+                pokemonName.text = state.message
             }
         }
     }

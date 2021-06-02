@@ -8,24 +8,17 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentTitleBinding
 
-class TitleFragment : Fragment() {
+class TitleFragment : Fragment(R.layout.fragment_title) {
 
     private var viewModel: TitleViewModel? = null
+    private val binding: FragmentTitleBinding by viewBinding()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        val binding: FragmentTitleBinding = DataBindingUtil.inflate(
-            inflater,
-            R.layout.fragment_title,
-            container,
-            false
-        )
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProvider(this)
             .get(TitleViewModel::class.java)
@@ -33,7 +26,6 @@ class TitleFragment : Fragment() {
         binding.startButton.setOnClickListener {
             viewModel?.startPlay()
         }
-
 
         viewModel?.let {
             it.isStartPlay.observe(viewLifecycleOwner) { isStartPlay ->
@@ -45,9 +37,5 @@ class TitleFragment : Fragment() {
                 }
             }
         }
-            return binding.root
-
-
     }
-
 }
