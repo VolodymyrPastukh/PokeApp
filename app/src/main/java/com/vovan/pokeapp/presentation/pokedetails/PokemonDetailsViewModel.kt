@@ -8,6 +8,7 @@ import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
 import kotlinx.coroutines.launch
 import com.vovan.pokeapp.domain.Result
+import com.vovan.pokeapp.toPokemonArtItem
 import com.vovan.pokeapp.toPokemonItem
 
 class PokemonDetailsViewModel(
@@ -34,7 +35,7 @@ class PokemonDetailsViewModel(
     private fun processResult(result: Result<PokemonEntity>) {
         when (result) {
             is Result.Success ->
-                _state.value = PokemonDetailsViewState.Data(result.data.toPokemonItem())
+                _state.value = PokemonDetailsViewState.Data(result.data.toPokemonArtItem())
 
             is Result.Error ->
                 _state.value = PokemonDetailsViewState.Error(result.error.message ?: "Unknown 404)")

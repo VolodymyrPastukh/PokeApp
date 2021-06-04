@@ -1,6 +1,6 @@
 package com.vovan.pokeapp.domain
 
-sealed class Result<out R>{
-    data class Success<out T>(val data: T): Result<T>()
-    data class Error(val error: Exception): Result<Nothing>()
+sealed class Result<out R> {
+    data class Success<out T>(val data: T) : Result<T>()
+    data class Error(val error: Exception) : Result<Nothing>()
 }

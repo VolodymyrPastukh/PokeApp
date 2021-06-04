@@ -10,6 +10,10 @@ fun generatePokemonUrlFromId(id: Int): String =
 fun generatePokemonArtUrlFromId(id: Int): String =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$id.png"
 
+fun getIdFromUrl(url: String): Int {
+    val regex = "\\b[0-9]+".toRegex()
+    return regex.find(url)?.value?.toInt() ?: 1
+}
 
 fun PokemonEntity.toPokemonItem(): PokemonItem {
     return PokemonItem(
@@ -20,16 +24,20 @@ fun PokemonEntity.toPokemonItem(): PokemonItem {
     )
 }
 
-fun getIdFromUrl(url: String): Int {
-    val regex = "\\b[0-9]+".toRegex()
-    return regex.find(url)?.value?.toInt() ?: 1
+fun PokemonEntity.toPokemonArtItem(): PokemonItem {
+    return PokemonItem(
+        id,
+        name,
+        generatePokemonArtUrlFromId(id),
+        order,
+    )
 }
 
 fun PokemonDetailedDTO.toPokemonEntity(): PokemonEntity{
     return PokemonEntity(
         id,
         name,
-        generatePokemonArtUrlFromId(id),
+        generatePokemonUrlFromId(id),
         order,
         abilities = abilities.map { it.ability.name }
     )
