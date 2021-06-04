@@ -1,7 +1,7 @@
 package com.vovan.pokeapp.data.network
 
 import com.vovan.pokeapp.data.dto.GenerationDetailedDTO
-import com.vovan.pokeapp.data.dto.PokemonDetailedDTO
+import com.vovan.pokeapp.data.dto.PokemonDetailsDTO
 import com.vovan.pokeapp.data.dto.PokemonListDTO
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -19,6 +19,6 @@ interface PokemonApiService {
     suspend fun fetchPokemonGeneration(@Path("level") level: Int = 0): GenerationDetailedDTO
 
     @GET("pokemon/{id}")
-    suspend fun fetchPokemonInfo(@Path("id") id: Int): PokemonDetailedDTO
+    suspend fun fetchPokemonInfo(@Path("id") id: Int): PokemonDetailsDTO
 }
 

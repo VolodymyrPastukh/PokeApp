@@ -1,7 +1,8 @@
 package com.vovan.pokeapp
 
-import com.vovan.pokeapp.data.dto.PokemonDetailedDTO
+import com.vovan.pokeapp.data.dto.PokemonDetailsDTO
 import com.vovan.pokeapp.domain.PokemonEntity
+import com.vovan.pokeapp.domain.PokemonStatEntity
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
 
 fun generatePokemonUrlFromId(id: Int): String =
@@ -24,32 +25,30 @@ fun PokemonEntity.toPokemonItem(): PokemonItem {
     )
 }
 
-fun PokemonEntity.toPokemonArtItem(): PokemonItem {
-    return PokemonItem(
-        id,
-        name,
-        generatePokemonArtUrlFromId(id),
-        order,
-    )
-}
 
-fun PokemonDetailedDTO.toPokemonEntity(): PokemonEntity{
+fun PokemonDetailsDTO.toPokemonEntity(): PokemonEntity {
     return PokemonEntity(
-        id,
-        name,
-        generatePokemonUrlFromId(id),
-        order,
+        id = id,
+        name = name,
+        imageUrl = generatePokemonUrlFromId(id),
+        artUrl = generatePokemonArtUrlFromId(id),
+        order = order,
+        types = types.map { it.type.name },
+        stats = stats.map { PokemonStatEntity(it.stat.name, it.base_stat) },
         abilities = abilities.map { it.ability.name }
     )
 }
 
-fun PokemonDetailedDTO.toPokemonEntity(generation: Int): PokemonEntity{
+fun PokemonDetailsDTO.toPokemonEntity(generation: Int): PokemonEntity {
     return PokemonEntity(
-        id,
-        name,
-        generatePokemonUrlFromId(id),
-        order,
-        generation,
+        id = id,
+        name = name,
+        imageUrl = generatePokemonUrlFromId(id),
+        artUrl = generatePokemonArtUrlFromId(id),
+        order = order,
+        generation = generation,
+        types = types.map { it.type.name },
+        stats = stats.map { PokemonStatEntity(it.stat.name, it.base_stat) },
         abilities = abilities.map { it.ability.name }
     )
 }
