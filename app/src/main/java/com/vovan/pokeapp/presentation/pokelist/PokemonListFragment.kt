@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
+import com.vovan.pokeapp.presentation.adapter.MarginDecorator
 import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -32,6 +33,7 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
         })
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
         binding.recyclerView.adapter = adapter
+//        binding.recyclerView.addItemDecoration(MarginDecorator(20))
 
         viewModel.state.observe(viewLifecycleOwner, ::displayData)
     }

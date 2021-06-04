@@ -32,7 +32,6 @@
                 android:id="@+id/name"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_margin="8dp"
                 android:layout_weight="1"
                 android:fontFamily="@font/poke_hollow"
                 android:gravity="center"
