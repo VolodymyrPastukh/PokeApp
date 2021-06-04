@@ -54,5 +54,15 @@ fun TextView.setPokemonHW(item: PokemonItem?){
     text = "Height: ${item?.height} | ${item?.weight} :thgieW"
 }
 
+@BindingAdapter("pokemonStatName")
+fun TextView.setPokemonStatName(item: PokemonStatItem?){
+    text = "${item?.name} - ${item?.base_stat}"
+}
+
+@BindingAdapter("pokemonStatProgress")
+fun LinearProgressIndicator.setPokemonStatPpogress(item: PokemonStatItem?){
+    progress = item?.base_stat?.div(3) ?: 1
+}
+
 
 

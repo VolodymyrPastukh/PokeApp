@@ -16,6 +16,11 @@ data class PokemonItem(
     val order: Int,
     val generation: Int = 0,
     val types: List<String>,
-    val stats: List<PokemonStatEntity>,
+    val stats: List<PokemonStatItem>,
     val abilities: List<String>
+): DisplayableItem
+
+data class PokemonStatItem(
+    val name: String,
+    val base_stat: Int
 ): DisplayableItem

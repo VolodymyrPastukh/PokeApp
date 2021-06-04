@@ -4,6 +4,7 @@ import com.vovan.pokeapp.data.dto.PokemonDetailsDTO
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonStatEntity
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
+import com.vovan.pokeapp.presentation.adapter.PokemonStatItem
 
 fun generatePokemonUrlFromId(id: Int): String =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png"
@@ -24,8 +25,15 @@ fun PokemonEntity.toPokemonItem(): PokemonItem {
         weight = weight,
         order = order,
         types = types,
-        stats = stats,
+        stats = stats.map { it.toPokemonStatItem() },
         abilities = abilities
+    )
+}
+
+fun PokemonStatEntity.toPokemonStatItem(): PokemonStatItem{
+    return PokemonStatItem(
+        name = name,
+        base_stat = base_stat
     )
 }
 
