@@ -51,7 +51,9 @@ class PokemonDetailsFragment : Fragment(R.layout.fragment_pokemon_details) {
 
             is PokemonDetailsViewState.Data -> {
                 progressBar.hide()
+                layout.background = createRandGradientBackground()
                 art.background = createRandGradientBackground()
+
                 pokemon = state.pokemonItem
                 executePendingBindings()
                 adapter?.setData(state.pokemonItem.stats)

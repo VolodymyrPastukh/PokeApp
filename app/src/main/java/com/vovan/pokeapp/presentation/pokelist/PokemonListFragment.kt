@@ -1,17 +1,16 @@
 package com.vovan.pokeapp.presentation.pokelist
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.vovan.pokeapp.R
 import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
-import com.vovan.pokeapp.presentation.adapter.MarginDecorator
 import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -31,20 +30,21 @@ class PokemonListFragment : Fragment(R.layout.fragment_pokemon_list) {
                 PokemonListFragmentDirections.actionPokemonListFragmentToPokemonDetailsFragment(it)
             )
         })
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
-//        binding.recyclerView.addItemDecoration(MarginDecorator(20))
+        binding.apply {
+            recyclerView.layoutManager = LinearLayoutManager(context)
+            recyclerView.adapter = adapter
+        }
 
         viewModel.state.observe(viewLifecycleOwner, ::displayData)
     }
 
 
-    private fun displayData(state: PokemonListViewState){
+    private fun displayData(state: PokemonListViewState) = binding.apply{
         when(state){
             is PokemonListViewState.Loading -> {}
 
             is PokemonListViewState.Data -> {
-                binding.progressBar.hide()
+                progressBar.hide()
                 adapter?.submitList(state.pokemons)
             }
 

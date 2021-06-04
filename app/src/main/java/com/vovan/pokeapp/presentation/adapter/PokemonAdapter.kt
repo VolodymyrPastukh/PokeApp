@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.vovan.pokeapp.createRandGradientBackground
 import com.vovan.pokeapp.databinding.PokeItemBinding
 
 
@@ -27,6 +28,7 @@ class PokemonAdapter(
         private val layout = binding.linearLayout
 
         fun bind(item: PokemonItem, clickListener: PokemonClickListener) {
+            layout.background = createRandGradientBackground()
             binding.item = item
             binding.executePendingBindings()
             binding.click = clickListener

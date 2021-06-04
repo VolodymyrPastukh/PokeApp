@@ -24,10 +24,8 @@ class PokemonListViewModel(private val repository: PokemonRepository): ViewModel
 
 
     private fun loadData() {
-        _state.value = PokemonListViewState.Loading
         viewModelScope.launch {
-            repository.allPokemons
-                .collect { pokemons ->
+            repository.allPokemons.collect{ pokemons ->
                 showData(pokemons.map { it.toPokemonItem() })
             }
         }
