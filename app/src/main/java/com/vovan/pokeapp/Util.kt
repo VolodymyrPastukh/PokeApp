@@ -18,10 +18,14 @@ fun getIdFromUrl(url: String): Int {
 
 fun PokemonEntity.toPokemonItem(): PokemonItem {
     return PokemonItem(
-        id,
-        name,
-        imageUrl,
-        order,
+        id = id,
+        name = name,
+        height = height,
+        weight = weight,
+        order = order,
+        types = types,
+        stats = stats,
+        abilities = abilities
     )
 }
 
@@ -30,8 +34,8 @@ fun PokemonDetailsDTO.toPokemonEntity(): PokemonEntity {
     return PokemonEntity(
         id = id,
         name = name,
-        imageUrl = generatePokemonUrlFromId(id),
-        artUrl = generatePokemonArtUrlFromId(id),
+        height = height,
+        weight = weight,
         order = order,
         types = types.map { it.type.name },
         stats = stats.map { PokemonStatEntity(it.stat.name, it.base_stat) },
@@ -43,8 +47,8 @@ fun PokemonDetailsDTO.toPokemonEntity(generation: Int): PokemonEntity {
     return PokemonEntity(
         id = id,
         name = name,
-        imageUrl = generatePokemonUrlFromId(id),
-        artUrl = generatePokemonArtUrlFromId(id),
+        height = height,
+        weight = weight,
         order = order,
         generation = generation,
         types = types.map { it.type.name },

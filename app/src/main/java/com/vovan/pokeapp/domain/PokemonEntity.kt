@@ -1,10 +1,15 @@
 package com.vovan.pokeapp.domain
 
+import com.vovan.pokeapp.generatePokemonArtUrlFromId
+import com.vovan.pokeapp.generatePokemonUrlFromId
+
 data class PokemonEntity(
     val id: Int,
     val name: String,
-    val imageUrl: String,
-    val artUrl: String,
+    val height: Int,
+    val weight: Int,
+    val imageUrl: String = generatePokemonUrlFromId(id),
+    val artUrl: String = generatePokemonArtUrlFromId(id),
     val order: Int,
     val generation: Int = 0,
     val types: List<String>,

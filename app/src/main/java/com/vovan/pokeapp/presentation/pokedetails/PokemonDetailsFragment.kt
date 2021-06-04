@@ -1,5 +1,6 @@
 package com.vovan.pokeapp.presentation.pokedetails
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,22 +31,36 @@ class PokemonDetailsFragment : Fragment(R.layout.fragment_pokemon_details) {
     private fun displayData(state: PokemonDetailsViewState) = binding.apply{
         when(state){
             is PokemonDetailsViewState.Loading -> {
-                pokemonImage.isVisible = false
-                pokemonName.isVisible = false
+                constrain.isVisible = false
             }
 
             is PokemonDetailsViewState.Data -> {
                 progressBar.hide()
-                pokemonImage.isVisible = true
-                pokemonName.isVisible = true
+                constrain.isVisible = true
                 pokemon = state.pokemonItem
                 executePendingBindings()
+
+                stat1t.text = state.pokemonItem.stats[0].name
+                stat1p.progress = state.pokemonItem.stats[0].base_stat
+
+                stat2t.text = state.pokemonItem.stats[1].name
+                stat2p.progress = state.pokemonItem.stats[1].base_stat
+
+                stat3t.text = state.pokemonItem.stats[2].name
+                stat3p.progress = state.pokemonItem.stats[2].base_stat
+
+                stat4t.text = state.pokemonItem.stats[3].name
+                stat4p.progress = state.pokemonItem.stats[3].base_stat
+
+                stat5t.text = state.pokemonItem.stats[4].name
+                stat5p.progress = state.pokemonItem.stats[4].base_stat
+
+                stat6t.text = state.pokemonItem.stats[5].name
+                stat6p.progress = state.pokemonItem.stats[5].base_stat
             }
 
             is PokemonDetailsViewState.Error -> {
                 progressBar.hide()
-                pokemonName.isVisible = true
-                pokemonName.text = state.message
             }
         }
     }
