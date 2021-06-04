@@ -1,47 +1,26 @@
 package com.vovan.pokeapp.presentation.adapter
 
-import android.graphics.Color
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.vovan.pokeapp.R
-import com.vovan.pokeapp.databinding.HeaderItemBinding
 import com.vovan.pokeapp.databinding.PokeItemBinding
 
-private const val ITEM_TYPE_UNKNOWN = 0
-private const val ITEM_TYPE_POKEMON = 1
-private const val ITEM_TYPE_HEADER = 2
 
 class PokemonAdapter(
     private val clickListener: PokemonClickListener
-) : ListAdapter<DisplayableItem, RecyclerView.ViewHolder>(PokemonItemDiffCallback){
+) : ListAdapter<PokemonItem, PokemonAdapter.PokemonViewHolder>(PokemonItemDiffCallback){
 
     //Create
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            ITEM_TYPE_POKEMON -> PokemonViewHolder.from(parent)
-            ITEM_TYPE_HEADER -> HeaderViewHolder.from(parent)
-            else -> throw IllegalStateException("Shos ne to")
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
+        return PokemonViewHolder.from(parent)
     }
 
     //Bind
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (val itemToShow = getItem(position)) {
-            is PokemonItem -> (holder as PokemonViewHolder).bind(itemToShow, clickListener)
-            is HeaderItem -> (holder as HeaderViewHolder).bind(itemToShow)
-        }
-    }
-
-    override fun getItemViewType(position: Int): Int {
-        return when (getItem(position)) {
-            is PokemonItem -> ITEM_TYPE_POKEMON
-            is HeaderItem -> ITEM_TYPE_HEADER
-            else -> ITEM_TYPE_UNKNOWN
-        }
+    override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
+        val itemToShow = getItem(position)
+        holder.bind(itemToShow, clickListener)
     }
 
     class PokemonViewHolder(private val binding: PokeItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -76,45 +55,17 @@ class PokemonAdapter(
 
     }
 
-    class HeaderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val binding = HeaderItemBinding.bind(itemView)
 
-        fun bind(item: HeaderItem) {
-            binding.bannerName.text = item.text.toString()
-
-            when (item.text) {
-                HeaderItem.Attribute.STRENGTH -> changeColor(Color.RED)
-                HeaderItem.Attribute.AGILITY -> changeColor(Color.GREEN)
-                HeaderItem.Attribute.INTELLIGENCE -> changeColor(Color.CYAN)
-                else -> changeColor(Color.GRAY)
-            }
-        }
-
-        private fun changeColor(color: Int) {
-            itemView.setBackgroundColor(color)
-            binding.bannerName.setBackgroundColor(color)
-        }
-
-        companion object {
-            fun from(parent: ViewGroup): HeaderViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.header_item, parent, false)
-                return HeaderViewHolder(view)
-            }
-
-        }
-    }
-
-    private object PokemonItemDiffCallback: DiffUtil.ItemCallback<DisplayableItem>(){
+    private object PokemonItemDiffCallback: DiffUtil.ItemCallback<PokemonItem>(){
         override fun areItemsTheSame(
-            oldItem: DisplayableItem,
-            newItem: DisplayableItem
-        ): Boolean = oldItem == newItem
+            oldItem: PokemonItem,
+            newItem: PokemonItem
+        ): Boolean = oldItem.name == newItem.name
 
         override fun areContentsTheSame(
-            oldItem: DisplayableItem,
-            newItem: DisplayableItem
-        ): Boolean = false
+            oldItem: PokemonItem,
+            newItem: PokemonItem
+        ): Boolean = oldItem == newItem
     }
 
 

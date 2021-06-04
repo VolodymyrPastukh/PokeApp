@@ -6,7 +6,7 @@ import com.vovan.pokeapp.presentation.adapter.PokemonItem
 sealed class PokemonListViewState {
     object Loading: PokemonListViewState()
 
-    data class Data(val pokemons: List<DisplayableItem>): PokemonListViewState()
+    data class Data(val pokemons: List<PokemonItem>): PokemonListViewState()
 
     data class Error(val message: String): PokemonListViewState()
 }

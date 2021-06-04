@@ -6,10 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
+import kotlinx.coroutines.launch
 import com.vovan.pokeapp.domain.Result
 import com.vovan.pokeapp.toPokemonItem
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 class PokemonDetailsViewModel(
     private val pokemonId: Int,
@@ -27,7 +26,7 @@ class PokemonDetailsViewModel(
 
      private fun loadData() {
         viewModelScope.launch {
-            val result = repository.getPokemonById(pokemonId.toString())
+            val result = repository.getPokemonById(pokemonId)
             processResult(result)
         }
     }
