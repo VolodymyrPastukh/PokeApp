@@ -11,10 +11,11 @@ data class PokemonEntity(
     val imageUrl: String = generatePokemonUrlFromId(id),
     val artUrl: String = generatePokemonArtUrlFromId(id),
     val order: Int,
+    var isLiked: Boolean = false,
     val generation: Int = 0,
-    val types: List<String>,
-    val stats: List<PokemonStatEntity>,
-    val abilities: List<String>
+    val types: List<String>? = null,
+    val stats: List<PokemonStatEntity>? = null,
+    val abilities: List<String>? = null
 )
 
 data class PokemonStatEntity(

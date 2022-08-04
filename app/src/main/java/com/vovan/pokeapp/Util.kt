@@ -3,6 +3,7 @@ package com.vovan.pokeapp
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
 import com.vovan.pokeapp.data.dto.PokemonDetailsDTO
+import com.vovan.pokeapp.data.room.entity.PokemonDB
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonStatEntity
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
@@ -48,8 +49,9 @@ fun PokemonEntity.toPokemonItem(): PokemonItem {
         height = height,
         weight = weight,
         order = order,
+        isLiked = isLiked,
         types = types,
-        stats = stats.map { it.toPokemonStatItem() },
+        stats = stats?.map { it.toPokemonStatItem() },
         abilities = abilities
     )
 }
@@ -72,6 +74,30 @@ fun PokemonDetailsDTO.toPokemonEntity(): PokemonEntity {
         types = types.map { it.type.name },
         stats = stats.map { PokemonStatEntity(it.stat.name, it.base_stat) },
         abilities = abilities.map { it.ability.name }
+    )
+}
+
+fun PokemonDetailsDTO.toPokemonDB(url: String = ""): PokemonDB {
+    return PokemonDB(
+        id = id,
+        name = name,
+        height = height,
+        weight = weight,
+        order = order,
+        url = url
+    )
+}
+
+
+
+fun PokemonDB.toPokemonEntity(): PokemonEntity {
+    return PokemonEntity(
+        id = id,
+        name = name,
+        height = height,
+        weight = weight,
+        order = order,
+        imageUrl = url
     )
 }
 

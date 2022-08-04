@@ -1,49 +1,46 @@
 package com.vovan.pokeapp.presentation.pokedetails
 
-import android.graphics.Color
-import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
-import by.kirich1409.viewbindingdelegate.viewBinding
-import com.vovan.pokeapp.R
 import com.vovan.pokeapp.createRandGradientBackground
 import com.vovan.pokeapp.databinding.FragmentPokemonDetailsBinding
-import com.vovan.pokeapp.presentation.adapter.PokemonAdapter
-import com.vovan.pokeapp.presentation.adapter.PokemonStatItem
+import com.vovan.pokeapp.databinding.FragmentPokemonListBinding
 import com.vovan.pokeapp.presentation.adapter.StatAdapter
-import com.vovan.pokeapp.presentation.pokelist.PokemonListFragmentDirections
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
-import kotlin.random.Random
-import kotlin.random.nextInt
 
 
-class PokemonDetailsFragment : Fragment(R.layout.fragment_pokemon_details) {
+class PokemonDetailsFragment : Fragment() {
 
     private val navArgs by navArgs<PokemonDetailsFragmentArgs>()
     private val viewModel: PokemonDetailsViewModel by viewModel { parametersOf(navArgs.pokemonId) }
-    private val binding: FragmentPokemonDetailsBinding by viewBinding()
+    private var _binding: FragmentPokemonDetailsBinding? = null
+    private val binding: FragmentPokemonDetailsBinding
+        get() = checkNotNull(_binding)
     private var adapter: StatAdapter? = null
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = FragmentPokemonDetailsBinding.inflate(inflater).apply { _binding = this }.root
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = with(binding) {
         super.onViewCreated(view, savedInstanceState)
 
         adapter = StatAdapter()
-        binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        binding.recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        recyclerView.adapter = adapter
 
         viewModel.state.observe(viewLifecycleOwner, ::displayData)
     }
 
-    private fun displayData(state: PokemonDetailsViewState) = binding.apply {
+    private fun displayData(state: PokemonDetailsViewState) = with(binding) {
         when (state) {
             is PokemonDetailsViewState.Loading -> {
                 progressBar.isVisible = true
@@ -56,6 +53,11 @@ class PokemonDetailsFragment : Fragment(R.layout.fragment_pokemon_details) {
 
                 pokemon = state.pokemonItem
                 executePendingBindings()
+
+                if(state.pokemonItem.stats == null) {
+                    recyclerView.visibility = View.GONE
+                    return@with
+                }
                 adapter?.setData(state.pokemonItem.stats)
 
             }

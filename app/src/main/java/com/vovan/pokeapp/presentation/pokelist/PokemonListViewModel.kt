@@ -7,11 +7,13 @@ import androidx.lifecycle.viewModelScope
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.adapter.PokemonItem
 import com.vovan.pokeapp.toPokemonItem
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 
-class PokemonListViewModel(private val repository: PokemonRepository): ViewModel() {
+class PokemonListViewModel(private val repository: PokemonRepository) : ViewModel() {
 
     private val _state = MutableLiveData<PokemonListViewState>()
     val state: LiveData<PokemonListViewState>
@@ -22,18 +24,21 @@ class PokemonListViewModel(private val repository: PokemonRepository): ViewModel
         loadData()
     }
 
-
     private fun loadData() {
+        repository.allPokemons.map { entityList ->
+            PokemonListViewState.Data(entityList.map { it.toPokemonItem() })
+        }.onEach { _state.postValue(it) }.launchIn(viewModelScope)
+    }
+
+    fun storeItem(item: PokemonItem) {
+       viewModelScope.launch {
+           repository.savePokemon(item.id, item.imageUrl)
+       }
+    }
+
+    fun deleteStoredItem(item: PokemonItem) {
         viewModelScope.launch {
-            repository.allPokemons.collect{ pokemons ->
-                showData(pokemons.map { it.toPokemonItem() })
-            }
+            repository.deletePokemon(item.id)
         }
     }
-
-
-    private fun showData(pokemonList: List<PokemonItem>) {
-        _state.value = PokemonListViewState.Data(pokemonList)
-    }
-
 }

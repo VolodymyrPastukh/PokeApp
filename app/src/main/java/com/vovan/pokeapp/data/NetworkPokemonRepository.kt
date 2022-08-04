@@ -1,52 +1,61 @@
 package com.vovan.pokeapp.data
 
 import com.vovan.pokeapp.data.network.PokemonApiService
+import com.vovan.pokeapp.data.room.PokemonsDao
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
+import com.vovan.pokeapp.domain.Result
 import com.vovan.pokeapp.getIdFromUrl
+import com.vovan.pokeapp.toPokemonDB
 import com.vovan.pokeapp.toPokemonEntity
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import com.vovan.pokeapp.domain.Result
 
 typealias FlowPokemons = Flow<List<PokemonEntity>>
 
-class NetworkPokemonRepository(private val api: PokemonApiService) : PokemonRepository {
+class NetworkPokemonRepository(
+    private val api: PokemonApiService,
+    private val pokemonsDao: PokemonsDao,
+    private val externalScope: CoroutineScope
+) : PokemonRepository {
 
     override suspend fun getPokemonById(id: Int): Result<PokemonEntity> {
         return withContext(Dispatchers.IO) {
             try {
-                val pokemon = api.fetchPokemonInfo(id).toPokemonEntity()
-                Result.Success(pokemon)
+                Result.Success(api.fetchPokemonInfo(id).toPokemonEntity())
             } catch (e: Exception) {
-                Result.Error(e)
+                val pokemon = pokemonsDao.getPokemonById(id)?.toPokemonEntity()
+                    ?: return@withContext Result.Error(e)
+                Result.Success(pokemon)
             }
         }
     }
 
     override val allPokemons: FlowPokemons = flow {
         val respond = mutableListOf<PokemonEntity>()
-        val count = api.fetchPokemonList().count
-        for (i in 0..count) {
-            val ids = api.fetchPokemonList(offset = i * 2)
-                .results.map { getIdFromUrl(it.url) }
+        try {
+            val count = api.fetchPokemonList().count
+            (0..count).forEach { c ->
+                val storedPokemons = pokemonsDao.getAll().map { it.id }.toSet()
+                val newPokemons = api.fetchPokemonList(offset = c * 2)
+                    .results
+                    .map { getIdFromUrl(it.url) }
+                    .map { name ->
+                        api.fetchPokemonInfo(name).toPokemonEntity()
+                            .also { if (storedPokemons.contains(it.id)) it.isLiked = true }
+                    }.sortedBy { it.order }
 
-            val pokemons = ids.map { name ->
-                api.fetchPokemonInfo(name).toPokemonEntity()
+                respond.addAll(newPokemons)
+                emit(respond)
             }
-
-            respond.addAll(pokemons)
-            respond.sortBy { it.order }
-
+        } catch (e: Exception) {
+            respond.addAll(pokemonsDao.getAll().map { it.toPokemonEntity() })
             emit(respond)
         }
-    }.flowOn(Dispatchers.IO)
-        .catch { e -> Timber.e(e) }
+    }.shareIn(externalScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 0))
 
 
     override val allPokemonsGeneration: FlowPokemons = flow {
@@ -69,4 +78,18 @@ class NetworkPokemonRepository(private val api: PokemonApiService) : PokemonRepo
         .catch { e -> Timber.e(e) }
 
 
+    override suspend fun savePokemon(id: Int, url: String) {
+        withContext(externalScope.coroutineContext) {
+            val pokemon = api.fetchPokemonInfo(id)
+            pokemonsDao.insertAll(pokemon.toPokemonDB(url))
+        }
+    }
+
+    override suspend fun deletePokemon(id: Int): Boolean {
+        return withContext(externalScope.coroutineContext) {
+            val pokemon = pokemonsDao.getPokemonById(id) ?: return@withContext false
+            pokemonsDao.delete(pokemon)
+            true
+        }
+    }
 }

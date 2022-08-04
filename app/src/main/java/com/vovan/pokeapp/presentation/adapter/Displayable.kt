@@ -1,5 +1,6 @@
 package com.vovan.pokeapp.presentation.adapter
 
+import android.view.View
 import com.vovan.pokeapp.domain.PokemonStatEntity
 import com.vovan.pokeapp.generatePokemonArtUrlFromId
 import com.vovan.pokeapp.generatePokemonUrlFromId
@@ -14,11 +15,14 @@ data class PokemonItem(
     val imageUrl: String = generatePokemonUrlFromId(id),
     val artUrl: String = generatePokemonArtUrlFromId(id),
     val order: Int,
+    val isLiked: Boolean = false,
     val generation: Int = 0,
-    val types: List<String>,
-    val stats: List<PokemonStatItem>,
-    val abilities: List<String>
+    val types: List<String>?,
+    val stats: List<PokemonStatItem>?,
+    val abilities: List<String>?
 ): DisplayableItem
+
+fun PokemonItem.getStoredVisibility() = if(isLiked) View.VISIBLE else View.GONE
 
 data class PokemonStatItem(
     val name: String,

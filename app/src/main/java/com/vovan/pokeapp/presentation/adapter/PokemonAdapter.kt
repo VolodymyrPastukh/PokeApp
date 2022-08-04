@@ -1,6 +1,7 @@
 package com.vovan.pokeapp.presentation.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,7 +12,7 @@ import com.vovan.pokeapp.databinding.PokeItemBinding
 
 class PokemonAdapter(
     private val clickListener: PokemonClickListener
-) : ListAdapter<PokemonItem, PokemonAdapter.PokemonViewHolder>(PokemonItemDiffCallback){
+) : ListAdapter<PokemonItem, PokemonAdapter.PokemonViewHolder>(PokemonItemDiffCallback) {
 
     //Create
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
@@ -24,14 +25,26 @@ class PokemonAdapter(
         holder.bind(itemToShow, clickListener)
     }
 
-    class PokemonViewHolder(private val binding: PokeItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    class PokemonViewHolder(private val binding: PokeItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         private val layout = binding.linearLayout
 
-        fun bind(item: PokemonItem, clickListener: PokemonClickListener) {
+        fun bind(item: PokemonItem, clickListener: PokemonClickListener) = with(binding) {
             layout.background = createRandGradientBackground()
-            binding.item = item
-            binding.executePendingBindings()
-            binding.click = clickListener
+            this.item = item
+            executePendingBindings()
+            click = clickListener
+
+            starIv.visibility = item.getStoredVisibility()
+            starIv.setOnClickListener {
+                starIv.visibility = View.GONE
+                clickListener.onStarClick(item)
+            }
+
+            itemView.setOnLongClickListener {
+                starIv.visibility = View.VISIBLE
+                clickListener.onLongClick(item)
+            }
 
             //Change position of each next element
             if (changePosition) {
@@ -42,6 +55,7 @@ class PokemonAdapter(
             } else {
                 changePosition = true
             }
+
         }
 
         companion object {
@@ -58,7 +72,7 @@ class PokemonAdapter(
     }
 
 
-    private object PokemonItemDiffCallback: DiffUtil.ItemCallback<PokemonItem>(){
+    private object PokemonItemDiffCallback : DiffUtil.ItemCallback<PokemonItem>() {
         override fun areItemsTheSame(
             oldItem: PokemonItem,
             newItem: PokemonItem
@@ -71,7 +85,9 @@ class PokemonAdapter(
     }
 
 
-    class PokemonClickListener(val clickListener: (id: Int) -> Unit) {
-        fun onClick(item: PokemonItem) = clickListener(item.id)
+    interface PokemonClickListener {
+        fun onClick(item: PokemonItem)
+        fun onLongClick(item: PokemonItem): Boolean
+        fun onStarClick(item: PokemonItem)
     }
 }
