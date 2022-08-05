@@ -1,24 +1,21 @@
 package com.vovan.pokeapp.data.room
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.vovan.pokeapp.data.room.entity.PokemonDB
 
 @Dao
 interface PokemonsDao {
 
     @Query("SELECT * FROM pokemondb")
-    fun getAll(): List<PokemonDB>
+    suspend fun getAllPokemons(): List<PokemonDB>
 
     @Query("SELECT * FROM pokemondb WHERE pokemondb.id LIKE :id")
-    fun getPokemonById(id: Int): PokemonDB?
+    suspend fun getPokemonById(id: Int): PokemonDB?
 
-    @Insert
-    fun insertAll(vararg pokemons: PokemonDB)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAll(vararg pokemons: PokemonDB)
 
     @Delete
-    fun delete(pokemon: PokemonDB)
+    suspend fun delete(pokemon: PokemonDB)
 
 }

@@ -17,9 +17,9 @@ data class PokemonItem(
     val order: Int,
     val isLiked: Boolean = false,
     val generation: Int = 0,
-    val types: List<String>?,
-    val stats: List<PokemonStatItem>?,
-    val abilities: List<String>?
+    val types: List<String>? = null,
+    val stats: List<PokemonStatItem>? = null,
+    val abilities: List<String>? = null
 ): DisplayableItem
 
 fun PokemonItem.getStoredVisibility() = if(isLiked) View.VISIBLE else View.GONE

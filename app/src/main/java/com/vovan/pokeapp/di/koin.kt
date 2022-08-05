@@ -9,6 +9,7 @@ import com.vovan.pokeapp.data.room.PokemonsDao
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.pokedetails.PokemonDetailsViewModel
 import com.vovan.pokeapp.presentation.pokelist.PokemonListViewModel
+import com.vovan.pokeapp.presentation.title.TitleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -31,6 +32,7 @@ val appModule = module {
     single<PokemonRepository> { NetworkPokemonRepository(get(), providePokemonDao(get()) , get()) }
 
 
+    viewModel { TitleViewModel() }
     viewModel { (id: Int) -> PokemonDetailsViewModel(id, get()) }
     viewModel { PokemonListViewModel(get()) }
 }

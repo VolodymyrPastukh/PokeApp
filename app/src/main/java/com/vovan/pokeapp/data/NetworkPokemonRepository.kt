@@ -14,13 +14,15 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
-typealias FlowPokemons = Flow<List<PokemonEntity>>
+typealias FlowPokemons = Flow<Result<List<PokemonEntity>>>
 
 class NetworkPokemonRepository(
     private val api: PokemonApiService,
     private val pokemonsDao: PokemonsDao,
     private val externalScope: CoroutineScope
 ) : PokemonRepository {
+
+    private val itemsMap = mutableMapOf<Int, PokemonEntity>()
 
     override suspend fun getPokemonById(id: Int): Result<PokemonEntity> {
         return withContext(Dispatchers.IO) {
@@ -35,28 +37,27 @@ class NetworkPokemonRepository(
     }
 
     override val allPokemons: FlowPokemons = flow {
-        val respond = mutableListOf<PokemonEntity>()
         try {
             val count = api.fetchPokemonList().count
             (0..count).forEach { c ->
-                val storedPokemons = pokemonsDao.getAll().map { it.id }.toSet()
-                val newPokemons = api.fetchPokemonList(offset = c * 2)
+                val storedPokemons = pokemonsDao.getAllPokemons().map { it.id }.toSet()
+                itemsMap.putAll(api.fetchPokemonList(offset = c * 2)
                     .results
                     .map { getIdFromUrl(it.url) }
                     .map { name ->
                         api.fetchPokemonInfo(name).toPokemonEntity()
                             .also { if (storedPokemons.contains(it.id)) it.isLiked = true }
-                    }.sortedBy { it.order }
+                    }.sortedBy { it.order }.map { it.id to it })
 
-                respond.addAll(newPokemons)
-                emit(respond)
+                emit(Result.Success(itemsMap.values.toList()))
             }
         } catch (e: Exception) {
-            respond.addAll(pokemonsDao.getAll().map { it.toPokemonEntity() })
-            emit(respond)
+            itemsMap.putAll(pokemonsDao.getAllPokemons().map { it.toPokemonEntity() }
+                .sortedBy { it.order }.map { it.id to it })
+            if (itemsMap.isEmpty()) emit(Result.Error(IllegalStateException("No items in api and db")))
+            emit(Result.Success(itemsMap.values.toList()))
         }
     }.shareIn(externalScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 0))
-
 
     override val allPokemonsGeneration: FlowPokemons = flow {
         val respond = mutableListOf<PokemonEntity>()
@@ -72,7 +73,7 @@ class NetworkPokemonRepository(
             respond.addAll(pokemons)
             respond.sortBy { it.generation }
 
-            emit(respond)
+            emit(Result.Success(respond))
         }
     }.flowOn(Dispatchers.IO)
         .catch { e -> Timber.e(e) }
@@ -92,4 +93,6 @@ class NetworkPokemonRepository(
             true
         }
     }
+
+
 }
