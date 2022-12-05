@@ -13,6 +13,7 @@ import io.reactivex.Single
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.rx2.asCompletable
+import kotlinx.coroutines.rx2.rxCompletable
 import kotlinx.coroutines.rx2.rxObservable
 import kotlinx.coroutines.rx2.rxSingle
 import timber.log.Timber
@@ -79,13 +80,13 @@ class RxPokemonRepository(
         }
     }
 
-    fun savePokemon(id: Int, url: String): Completable = externalScope.launch {
+    fun savePokemon(id: Int, url: String): Completable = rxCompletable {
         val pokemon = api.fetchPokemonInfo(id)
         pokemonsDao.insertAll(pokemon.toPokemonDB(url))
-    }.asCompletable(externalScope.coroutineContext)
+    }
 
-    fun deletePokemon(id: Int): Completable = externalScope.launch {
-        val pokemon = pokemonsDao.getPokemonById(id) ?: return@launch
+    fun deletePokemon(id: Int): Completable = rxCompletable {
+        val pokemon = pokemonsDao.getPokemonById(id) ?: return@rxCompletable
         pokemonsDao.delete(pokemon)
-    }.asCompletable(externalScope.coroutineContext)
+    }
 }
