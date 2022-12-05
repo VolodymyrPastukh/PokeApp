@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-@VisibleForTesting
 class PokemonListViewModel(private val repository: PokemonRepository) : ViewModel() {
 
     private val pokemonsData = mutableListOf<PokemonItem>()
@@ -27,7 +26,6 @@ class PokemonListViewModel(private val repository: PokemonRepository) : ViewMode
         loadData()
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     private fun loadData() {
         repository.allPokemons.map { respond ->
             when (respond) {

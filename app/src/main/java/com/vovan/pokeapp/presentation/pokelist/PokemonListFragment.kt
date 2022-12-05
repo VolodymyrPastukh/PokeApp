@@ -16,7 +16,7 @@ import timber.log.Timber
 
 class PokemonListFragment : Fragment() {
 
-    private val viewModel: PokemonListViewModel by viewModel()
+    private val viewModel: RxPokemonListViewModel by viewModel()
     private var _binding: FragmentPokemonListBinding? = null
     private val binding: FragmentPokemonListBinding
         get() = checkNotNull(_binding)

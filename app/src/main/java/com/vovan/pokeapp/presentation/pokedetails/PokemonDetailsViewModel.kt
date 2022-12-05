@@ -6,14 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
-import kotlinx.coroutines.launch
 import com.vovan.pokeapp.domain.Result
 import com.vovan.pokeapp.toPokemonItem
+import kotlinx.coroutines.launch
 
 class PokemonDetailsViewModel(
     private val pokemonId: Int,
     private val repository: PokemonRepository
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _state = MutableLiveData<PokemonDetailsViewState>()
     val state: LiveData<PokemonDetailsViewState>
@@ -24,7 +24,7 @@ class PokemonDetailsViewModel(
         loadData()
     }
 
-     private fun loadData() {
+    private fun loadData() {
         viewModelScope.launch {
             val result = repository.getPokemonById(pokemonId)
             processResult(result)
@@ -32,13 +32,12 @@ class PokemonDetailsViewModel(
     }
 
     private fun processResult(result: Result<PokemonEntity>) {
-        when (result) {
-            is Result.Success ->
-                _state.value = PokemonDetailsViewState.Data(result.data.toPokemonItem())
-
-            is Result.Error ->
-                _state.value = PokemonDetailsViewState.Error(result.error.message ?: "Unknown 404)")
-        }
+        _state.postValue(
+            when (result) {
+                is Result.Success -> PokemonDetailsViewState.Data(result.data.toPokemonItem())
+                is Result.Error -> PokemonDetailsViewState.Error(result.error.message ?: "404")
+            }
+        )
     }
 
 }

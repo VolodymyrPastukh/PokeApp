@@ -4,17 +4,18 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.vovan.pokeapp.domain.PokemonEntity
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.domain.Result
+import com.vovan.pokeapp.presentation.MainCoroutineRule
 import io.kotest.matchers.collections.shouldHaveAtLeastSize
 import io.kotest.matchers.shouldBe
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.unmockkAll
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -22,7 +23,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
 import org.robolectric.RobolectricTestRunner
-import java.lang.IllegalStateException
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -31,8 +31,8 @@ class PokemonListViewModelTest {
     @get:Rule
     val instantExecutorRule = InstantTaskExecutorRule()
 
-    private val dispatcher = UnconfinedTestDispatcher()
-    private val scope = TestScope(dispatcher)
+    @get:Rule
+    val mainCoroutineRule = MainCoroutineRule()
 
     private val pokemon = PokemonEntity(id = 1, name = "name", height = 0, weight = 0, order = 0)
 
@@ -41,7 +41,6 @@ class PokemonListViewModelTest {
 
     @Before
     fun setUp() = runTest {
-        Dispatchers.setMain(dispatcher)
         coEvery { repository.allPokemons } returns flow {
             repeat(2) {
                 delay(1000)
@@ -54,7 +53,6 @@ class PokemonListViewModelTest {
 
     @After
     fun tearDown() {
-        Dispatchers.resetMain()
         unmockkAll()
         stopKoin()
     }

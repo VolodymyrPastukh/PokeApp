@@ -3,12 +3,14 @@ package com.vovan.pokeapp.di
 import android.content.Context
 import androidx.room.Room
 import com.vovan.pokeapp.data.NetworkPokemonRepository
+import com.vovan.pokeapp.data.RxPokemonRepository
 import com.vovan.pokeapp.data.network.PokemonApiService
 import com.vovan.pokeapp.data.room.AppDatabase
 import com.vovan.pokeapp.data.room.PokemonsDao
 import com.vovan.pokeapp.domain.PokemonRepository
 import com.vovan.pokeapp.presentation.pokedetails.PokemonDetailsViewModel
 import com.vovan.pokeapp.presentation.pokelist.PokemonListViewModel
+import com.vovan.pokeapp.presentation.pokelist.RxPokemonListViewModel
 import com.vovan.pokeapp.presentation.title.TitleViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,11 +32,13 @@ val appModule = module {
     single { providePokemonApiService(get()) }
     single { provideDatabase(androidContext()) }
     single<PokemonRepository> { NetworkPokemonRepository(get(), providePokemonDao(get()) , get()) }
+    single<RxPokemonRepository> { RxPokemonRepository(get(), providePokemonDao(get()) , get()) }
 
 
     viewModel { TitleViewModel() }
     viewModel { (id: Int) -> PokemonDetailsViewModel(id, get()) }
     viewModel { PokemonListViewModel(get()) }
+    viewModel { RxPokemonListViewModel(get()) }
 }
 
 fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
